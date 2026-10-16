@@ -1,0 +1,389 @@
+/* ------------------------------------------------------------------
+   Cards — the three "pick your night" tiles that sit under the hero.
+   Prefix: sj-cards
+   ------------------------------------------------------------------ */
+
+.sj-cards {
+  isolation: isolate;
+}
+
+/* ----------------------------- header ---------------------------- */
+.sj-cards__head {
+  display: grid;
+  gap: 16px;
+  margin-bottom: clamp(32px, 4.4vw, 60px);
+}
+
+.sj-cards__lead {
+  max-width: 34ch;
+}
+
+/* Trailing eyebrow dash only when the header is centred. */
+.sj-cards__head .eyebrow--center::after {
+  display: none;
+}
+
+@media (min-width: 1000px) {
+  .sj-cards__head {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 36ch);
+    align-items: end;
+    gap: clamp(28px, 5vw, 72px);
+  }
+
+  .sj-cards__head-aside {
+    padding-bottom: 0.4em;
+  }
+}
+
+@media (max-width: 760px) {
+  .sj-cards__head {
+    justify-items: center;
+    text-align: center;
+  }
+
+  .sj-cards__head .eyebrow--center::after {
+    display: block;
+  }
+
+  .sj-cards__lead {
+    margin-inline: auto;
+  }
+}
+
+/* ------------------------------ grid ----------------------------- */
+.sj-cards__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(16px, 2vw, 26px);
+}
+
+.sj-cards__cell {
+  display: block;
+  min-width: 0;
+}
+
+/* ------------------------------ card ----------------------------- */
+.sj-cards__card {
+  position: relative;
+  display: block;
+  isolation: isolate;
+  overflow: hidden;
+  aspect-ratio: 4 / 5;
+  border-radius: var(--r-xl);
+  background: var(--bg-2);
+  color: var(--text);
+  box-shadow: inset 0 0 0 1px var(--line);
+  -webkit-tap-highlight-color: transparent;
+  transition: transform var(--t-slow) var(--ease-out), box-shadow var(--t-slow) var(--ease-out);
+}
+
+.sj-cards__card:focus-visible {
+  outline: 2px solid var(--cyan-300);
+  outline-offset: 4px;
+  border-radius: var(--r-xl);
+}
+
+.sj-cards__img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1.02);
+  filter: saturate(0.88) contrast(1.05);
+  transition: transform 900ms var(--ease-out), filter 900ms var(--ease-out);
+}
+
+/* --- overlay stack: hue shift, electric wash, legibility scrim --- */
+.sj-cards__tint,
+.sj-cards__wash,
+.sj-cards__scrim,
+.sj-cards__edge {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+.sj-cards__tint {
+  background: linear-gradient(135deg, rgba(0, 71, 255, 0.46) 0%, rgba(0, 212, 255, 0.3) 100%);
+  mix-blend-mode: color;
+  opacity: 0.52;
+}
+
+.sj-cards__wash {
+  background: var(--grad-electric-soft);
+  mix-blend-mode: overlay;
+  opacity: 0.85;
+}
+
+.sj-cards__scrim {
+  background: linear-gradient(
+    180deg,
+    rgba(4, 6, 11, 0.1) 0%,
+    rgba(4, 6, 11, 0.3) 44%,
+    rgba(4, 6, 11, 0.92) 100%
+  );
+}
+
+/* 1px electric inset that only lights up on hover / focus. */
+.sj-cards__edge {
+  z-index: 3;
+  opacity: 0;
+  box-shadow: inset 0 0 0 1px var(--line-blue), inset 0 1px 0 0 rgba(255, 255, 255, 0.14);
+  transition: opacity var(--t) var(--ease);
+}
+
+/* ----------------------------- content --------------------------- */
+.sj-cards__index {
+  position: absolute;
+  z-index: 2;
+  top: clamp(16px, 1.9vw, 22px);
+  left: clamp(20px, 2.4vw, 30px);
+  padding: 6px 13px;
+  border-radius: var(--r-pill);
+  font-family: var(--font-display);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  line-height: 1;
+  color: var(--text-2);
+}
+
+.sj-cards__body {
+  position: absolute;
+  z-index: 2;
+  inset: auto 0 0 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 11px;
+  padding: clamp(20px, 2.4vw, 30px);
+}
+
+.sj-cards__title {
+  font-size: var(--fs-h3);
+  font-weight: 700;
+  letter-spacing: -0.038em;
+  line-height: 1.02;
+  text-shadow: 0 2px 20px rgba(4, 6, 11, 0.55);
+}
+
+/* Hairline that fades out as it travels right. */
+.sj-cards__hair {
+  width: 168px;
+  max-width: 70%;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(110, 180, 255, 0.52), rgba(110, 180, 255, 0.06) 62%, transparent);
+}
+
+/* Blurb collapses at rest and slides open on hover / focus. */
+.sj-cards__reveal {
+  display: grid;
+  grid-template-rows: 0fr;
+  width: 100%;
+  transition: grid-template-rows 560ms var(--ease-out);
+}
+
+.sj-cards__reveal-in {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.sj-cards__blurb {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  max-width: 38ch;
+  color: var(--muted);
+  font-size: var(--fs-sm);
+  line-height: 1.55;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 420ms var(--ease-out), transform 420ms var(--ease-out);
+}
+
+.sj-cards__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  margin-top: 2px;
+  padding: 0 16px;
+  border-radius: var(--r-pill);
+  background: var(--grad-electric);
+  background-size: 180% 180%;
+  background-position: 0% 50%;
+  box-shadow: var(--glow-ring), var(--glow-sm);
+  color: var(--text);
+  font-family: var(--font-display);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  letter-spacing: 0.015em;
+  line-height: 1;
+  white-space: nowrap;
+  transition: background-position var(--t) var(--ease), box-shadow var(--t) var(--ease);
+}
+
+.sj-cards__arrow {
+  width: 15px;
+  height: 15px;
+  transition: transform var(--t) var(--ease);
+}
+
+/* ------------------------- hover / focus ------------------------- */
+@media (hover: hover) {
+  .sj-cards__card:hover {
+    transform: translateY(-6px);
+    box-shadow: inset 0 0 0 1px var(--line), 0 18px 42px -20px rgba(0, 110, 255, 0.6),
+      0 0 44px -18px rgba(0, 190, 255, 0.42);
+  }
+
+  .sj-cards__card:hover .sj-cards__img {
+    transform: scale(1.08);
+    filter: saturate(1) contrast(1.02);
+  }
+
+  .sj-cards__card:hover .sj-cards__edge {
+    opacity: 1;
+  }
+
+  .sj-cards__card:hover .sj-cards__reveal {
+    grid-template-rows: 1fr;
+  }
+
+  .sj-cards__card:hover .sj-cards__blurb {
+    opacity: 1;
+    transform: none;
+  }
+
+  .sj-cards__card:hover .sj-cards__cta {
+    background-position: 100% 50%;
+    box-shadow: var(--glow-ring), var(--glow-md);
+  }
+
+  .sj-cards__card:hover .sj-cards__arrow {
+    transform: translateX(4px);
+  }
+}
+
+/* Keyboard parity — same treatment, no pointer required. */
+.sj-cards__card:focus-visible,
+.sj-cards__card:focus-within {
+  transform: translateY(-6px);
+  box-shadow: inset 0 0 0 1px var(--line), 0 18px 42px -20px rgba(0, 110, 255, 0.6),
+    0 0 44px -18px rgba(0, 190, 255, 0.42);
+}
+
+.sj-cards__card:focus-visible .sj-cards__img,
+.sj-cards__card:focus-within .sj-cards__img {
+  transform: scale(1.08);
+  filter: saturate(1) contrast(1.02);
+}
+
+.sj-cards__card:focus-visible .sj-cards__edge,
+.sj-cards__card:focus-within .sj-cards__edge {
+  opacity: 1;
+}
+
+.sj-cards__card:focus-visible .sj-cards__reveal,
+.sj-cards__card:focus-within .sj-cards__reveal {
+  grid-template-rows: 1fr;
+}
+
+.sj-cards__card:focus-visible .sj-cards__blurb,
+.sj-cards__card:focus-within .sj-cards__blurb {
+  opacity: 1;
+  transform: none;
+}
+
+.sj-cards__card:focus-visible .sj-cards__cta,
+.sj-cards__card:focus-within .sj-cards__cta {
+  background-position: 100% 50%;
+  box-shadow: var(--glow-ring), var(--glow-md);
+}
+
+.sj-cards__card:focus-visible .sj-cards__arrow,
+.sj-cards__card:focus-within .sj-cards__arrow {
+  transform: translateX(4px);
+}
+
+.sj-cards__card:active {
+  transform: translateY(-2px);
+}
+
+/* No hover pointer — never hide the blurb behind a state that cannot happen. */
+@media (hover: none) {
+  .sj-cards__reveal {
+    grid-template-rows: 1fr;
+  }
+
+  .sj-cards__blurb {
+    opacity: 1;
+    transform: none;
+  }
+
+  .sj-cards__edge {
+    opacity: 0.6;
+  }
+}
+
+/* ---------------------------- responsive ------------------------- */
+@media (max-width: 900px) {
+  .sj-cards__grid {
+    grid-template-columns: minmax(0, 1fr);
+    max-width: 620px;
+    margin-inline: auto;
+  }
+
+  .sj-cards__card {
+    aspect-ratio: 16 / 10;
+  }
+}
+
+@media (max-width: 560px) {
+  .sj-cards__card {
+    aspect-ratio: 4 / 3;
+    border-radius: var(--r-lg);
+  }
+
+  .sj-cards__blurb {
+    max-width: none;
+  }
+}
+
+/* --------------------------- reduced motion ---------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .sj-cards__card,
+  .sj-cards__card:hover,
+  .sj-cards__card:focus-visible,
+  .sj-cards__card:focus-within,
+  .sj-cards__card:active {
+    transform: none;
+  }
+
+  .sj-cards__img,
+  .sj-cards__card:hover .sj-cards__img,
+  .sj-cards__card:focus-visible .sj-cards__img,
+  .sj-cards__card:focus-within .sj-cards__img {
+    transform: scale(1.02);
+  }
+
+  .sj-cards__arrow,
+  .sj-cards__card:hover .sj-cards__arrow,
+  .sj-cards__card:focus-visible .sj-cards__arrow,
+  .sj-cards__card:focus-within .sj-cards__arrow {
+    transform: none;
+  }
+
+  .sj-cards__reveal {
+    grid-template-rows: 1fr;
+  }
+
+  .sj-cards__blurb {
+    opacity: 1;
+    transform: none;
+  }
+}

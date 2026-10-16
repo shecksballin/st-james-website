@@ -1,0 +1,402 @@
+/* ------------------------------------------------------------------
+   Hero — one full-bleed reel, floating chrome over it, nothing else
+   on the first screenful. Prefix: sj-hero
+   ------------------------------------------------------------------ */
+
+.sj-hero {
+  position: relative;
+  width: 100%;
+  height: 100vh; /* fallback first, for browsers without svh */
+  height: 100svh;
+  min-height: 620px;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  place-items: center;
+  isolation: isolate;
+  background-color: var(--bg);
+}
+
+/* ----------------------------- media ------------------------------ */
+.sj-hero__media {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  /* The <img> poster handles first paint and then fades. A duplicate CSS
+     background would stay behind it forever, and the poster has the club's
+     watermark burned into its bottom-left corner. */
+  background-color: var(--bg);
+}
+
+/* The cover maths. Size to the LARGER of the two cover dimensions so a
+   16:9 surface always spills past both axes, plus ~2px of overscan so no
+   sub-pixel hairline can ever show at an edge. */
+.sj-hero__video,
+.sj-hero__poster {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border: 0;
+  max-width: none;
+  /* fallback pair — vh */
+  width: max(calc(100vw + 2px), calc(100vh * (16 / 9) + 2px));
+  height: max(calc(100vh + 2px), calc(100vw * (9 / 16) + 2px));
+  /* preferred pair — svh */
+  width: max(calc(100vw + 2px), calc(100svh * (16 / 9) + 2px));
+  height: max(calc(100svh + 2px), calc(100vw * (9 / 16) + 2px));
+}
+
+/* Short viewports still honour the 620px floor, so cover against that too. */
+@media (max-height: 620px) {
+  .sj-hero__video,
+  .sj-hero__poster {
+    width: max(calc(100vw + 2px), calc(620px * (16 / 9) + 2px));
+    height: max(622px, calc(100vw * (9 / 16) + 2px));
+  }
+}
+
+/* YouTube paints its own title + channel chrome across the top-left of the
+   embed, and no embed parameter removes it. Scaling the iframe past cover
+   pushes that strip outside the hero; the extra crop is invisible on footage
+   that is only ever a background. */
+.sj-hero__video {
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(1.34);
+  transform-origin: 50% 50%;
+  transition: opacity 900ms var(--ease);
+}
+
+.sj-hero__video.is-live {
+  opacity: 1;
+}
+
+.sj-hero__poster {
+  z-index: 2; /* sits over the iframe until the reel reports loaded */
+  object-fit: cover;
+  object-position: center;
+  opacity: 1;
+  transition: opacity 900ms var(--ease);
+}
+
+.sj-hero__poster.is-gone {
+  opacity: 0;
+}
+
+/* ---------------------------- overlays ---------------------------- */
+.sj-hero__scrim,
+.sj-hero__wash,
+.sj-hero__vignette,
+.sj-hero__topfade,
+.sj-hero__edge {
+  position: absolute;
+  pointer-events: none;
+}
+
+.sj-hero__scrim,
+.sj-hero__wash,
+.sj-hero__vignette {
+  inset: 0;
+  z-index: 3;
+}
+
+/* The reel is shot in a dark room, so the scrim stays light enough to let the
+   footage read — the type earns its contrast from the vignette and topfade. */
+.sj-hero__scrim {
+  background: linear-gradient(
+    180deg,
+    rgba(4, 6, 11, 0.52) 0%,
+    rgba(4, 6, 11, 0.14) 30%,
+    rgba(4, 6, 11, 0.34) 62%,
+    rgba(4, 6, 11, 0.94) 100%
+  );
+}
+
+/* Tints the venue lighting bluer without flattening the footage. */
+.sj-hero__wash {
+  background: var(--grad-electric-soft);
+  opacity: 0.3;
+  mix-blend-mode: overlay;
+}
+
+.sj-hero__vignette {
+  background: radial-gradient(
+    130% 100% at 50% 45%,
+    transparent 42%,
+    rgba(4, 6, 11, 0.62) 100%
+  );
+}
+
+/* Guarantees contrast under the floating nav pills. */
+.sj-hero__topfade {
+  inset: 0 0 auto 0;
+  height: 180px;
+  z-index: 4;
+  background: linear-gradient(180deg, rgba(4, 6, 11, 0.8), rgba(4, 6, 11, 0));
+}
+
+/* Fading hairline so the hero meets the next section cleanly. */
+.sj-hero__edge {
+  inset: auto 0 0 0;
+  height: 1px;
+  z-index: 4;
+  background: linear-gradient(90deg, transparent, rgba(110, 180, 255, 0.28), transparent);
+}
+
+/* ---------------------------- content ----------------------------- */
+.sj-hero__inner {
+  position: relative;
+  z-index: 5;
+  grid-area: 1 / 1;
+  /* Top pad is a touch heavier than the bottom so the cluster sits just
+     below optical centre, the way the reference does. */
+  padding-block: calc(var(--nav-h) + clamp(26px, 7vh, 88px)) clamp(80px, 10vh, 124px);
+}
+
+.sj-hero__content {
+  width: 100%;
+  max-width: min(1100px, 92vw);
+  margin-inline: auto;
+  display: grid;
+  justify-items: center;
+  gap: clamp(16px, 2.2vw, 28px);
+  text-align: center;
+}
+
+/* ---------------------------- the logo ---------------------------- */
+.sj-hero__logo {
+  position: relative;
+  width: min(760px, 88vw);
+  height: clamp(170px, 24vw, 290px);
+  margin-block-end: clamp(-18px, -1.3vw, -4px);
+  pointer-events: none;
+}
+
+/* First-paint fallback + the accessible name for the mark. */
+.sj-hero__logo-img {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  /* Sized to sit close to where the WebGL canvas traces the mark, so the
+     hand-off reads as the logo lighting up rather than two stacked logos.
+     If WebGL never starts, this stays put as the real logo. */
+  width: 56%;
+  height: auto;
+  z-index: 0;
+  opacity: 0.9;
+  pointer-events: none;
+  filter: drop-shadow(0 0 38px rgba(0, 132, 255, 0.35));
+  transition: opacity 260ms var(--ease);
+}
+
+.sj-hero__logo-img.is-gone {
+  opacity: 0;
+  /* A backgrounded tab freezes transitions mid-flight; visibility is not
+     interpolated, so the fallback can never be left half-visible. */
+  visibility: hidden;
+  transition: opacity 260ms var(--ease), visibility 0s linear 260ms;
+}
+
+/* Only this box is interactive — that is what makes the lightning chase
+   the cursor — and it never overlaps the CTAs below. */
+.sj-hero__logo-canvas {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: auto;
+}
+
+/* ---------------------------- headline ---------------------------- */
+.sj-hero__title {
+  /* Uses the hero token, capped so both lines hold on one line on desktop. */
+  font-size: max(2.05rem, min(var(--fs-hero), 6.9vw, 5rem));
+  font-weight: 700;
+  line-height: 0.92;
+  letter-spacing: -0.04em;
+  text-wrap: balance;
+  margin: 0;
+  max-width: 100%;
+}
+
+/* fit-content keeps the gradient mapped to the glyphs rather than to the
+   full-width block, so the ramp lands where the eye expects it. */
+.sj-hero__title-line {
+  display: block;
+  width: fit-content;
+  max-width: 100%;
+  margin-inline: auto;
+}
+
+/* The gradient lands on the second line only — restrained, as briefed. */
+.sj-hero__title-line.gradient-text {
+  padding-block-end: 0.06em; /* keeps descenders out of the clip box */
+}
+
+/* ---------------------------- subcopy ----------------------------- */
+.sj-hero__sub {
+  font-size: calc(var(--fs-lead) * 0.94);
+  color: var(--text-2);
+  line-height: 1.6;
+  letter-spacing: 0.005em;
+  max-width: min(72ch, 100%);
+  margin-inline: auto;
+  text-wrap: pretty;
+}
+
+.sj-hero__sub-line {
+  display: block;
+}
+
+/* ------------------------------ CTAs ------------------------------ */
+.sj-hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  margin-block-start: clamp(4px, 1vw, 12px);
+}
+
+.sj-hero__actions > .btn {
+  min-height: 48px;
+}
+
+@media (max-width: 559px) {
+  .sj-hero__actions {
+    width: 100%;
+    max-width: 360px;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .sj-hero__actions > .btn {
+    width: 100%;
+  }
+}
+
+/* --------------------------- scroll cue --------------------------- */
+.sj-hero__cue {
+  position: absolute;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 6;
+  display: grid;
+  justify-items: center;
+  gap: 9px;
+  min-width: 56px;
+  min-height: 44px;
+  padding: 4px 16px 2px;
+  margin: 0;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  color: var(--faint);
+  transition: color var(--t) var(--ease);
+}
+
+.sj-hero__cue:hover {
+  color: var(--text-2);
+}
+
+.sj-hero__cue-track {
+  position: relative;
+  display: block;
+  width: 1px;
+  height: 44px;
+  background: linear-gradient(
+    180deg,
+    rgba(150, 205, 255, 0) 0%,
+    rgba(150, 205, 255, 0.42) 50%,
+    rgba(150, 205, 255, 0) 100%
+  );
+  transition: transform var(--t) var(--ease);
+}
+
+.sj-hero__cue:hover .sj-hero__cue-track {
+  transform: translateY(2px);
+}
+
+.sj-hero__cue-dot {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 4px;
+  height: 4px;
+  margin-left: -2px;
+  border-radius: 50%;
+  background: var(--cyan-300);
+  box-shadow: 0 0 10px 2px rgba(92, 231, 255, 0.7), 0 0 22px 4px rgba(0, 132, 255, 0.4);
+  animation: sj-hero-cue-fall 2.4s var(--ease) infinite;
+}
+
+.sj-hero__cue-label {
+  font-family: var(--font-body);
+  font-size: var(--fs-xs);
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: 0.3em;
+  text-indent: 0.3em; /* cancels the trailing letter-space so it reads centred */
+  text-transform: uppercase;
+}
+
+@keyframes sj-hero-cue-fall {
+  0% {
+    transform: translateY(0);
+    opacity: 0;
+  }
+  16% {
+    opacity: 1;
+  }
+  74% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(40px);
+    opacity: 0;
+  }
+}
+
+/* No room for a cue on a short viewport. */
+@media (max-height: 560px) {
+  .sj-hero__cue {
+    display: none;
+  }
+}
+
+/* --------------------------- fine tuning -------------------------- */
+@media (max-width: 720px) {
+  .sj-hero__inner {
+    padding-block: calc(var(--nav-h) + 18px) clamp(76px, 10vh, 110px);
+  }
+
+  .sj-hero__logo {
+    height: clamp(128px, 30vw, 200px);
+    margin-block-end: -6px;
+  }
+}
+
+/* ------------------------- reduced motion ------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .sj-hero__cue-dot {
+    animation: none;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 0.95;
+  }
+
+  .sj-hero__cue:hover .sj-hero__cue-track {
+    transform: none;
+  }
+
+  .sj-hero__poster,
+  .sj-hero__video,
+  .sj-hero__logo-img {
+    transition: none;
+  }
+}

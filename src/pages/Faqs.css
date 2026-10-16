@@ -1,0 +1,309 @@
+/* ------------------------------------------------------------------
+   FAQs page — accordion. Prefix: sj-faq
+   ------------------------------------------------------------------ */
+
+.sj-faq {
+  position: relative;
+  padding-top: calc(var(--nav-h) + clamp(48px, 8vw, 110px));
+  padding-bottom: clamp(80px, 11vw, 160px);
+}
+
+/* A single soft electric bloom sitting behind the column. */
+.sj-faq::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto;
+  height: min(70vh, 720px);
+  pointer-events: none;
+  background: radial-gradient(760px 420px at 50% 0%, rgba(0, 110, 255, 0.16), transparent 68%);
+}
+
+.sj-faq__inner {
+  position: relative;
+  max-width: 880px;
+  margin-inline: auto;
+}
+
+/* ----------------------------- header ---------------------------- */
+.sj-faq__head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.sj-faq__title {
+  font-size: var(--fs-h2);
+  margin-top: 18px;
+}
+
+.sj-faq__lead {
+  margin-top: clamp(16px, 2.2vw, 24px);
+  max-width: 50ch;
+  text-align: center;
+}
+
+/* ---------------------------- accordion -------------------------- */
+.sj-faq__list {
+  margin-top: clamp(40px, 6vw, 72px);
+  border-top: 1px solid var(--line);
+}
+
+.sj-faq__item {
+  position: relative;
+  border-bottom: 1px solid var(--line);
+}
+
+/* The electric left edge: grows out of the vertical centre when open. */
+.sj-faq__item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  border-radius: 2px;
+  background: var(--grad-electric);
+  box-shadow: var(--glow-sm);
+  opacity: 0;
+  transform: scaleY(0);
+  transform-origin: 50% 50%;
+  transition: transform var(--t) var(--ease), opacity var(--t) var(--ease);
+  pointer-events: none;
+}
+
+.sj-faq__item--open::before {
+  opacity: 1;
+  transform: scaleY(1);
+}
+
+.sj-faq__row {
+  margin: 0;
+  font: inherit;
+  letter-spacing: inherit;
+  line-height: inherit;
+}
+
+.sj-faq__qText {
+  display: block;
+  text-wrap: balance;
+}
+
+.sj-faq__q {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: clamp(14px, 3vw, 28px);
+  width: 100%;
+  min-height: 56px;
+  margin: 0;
+  padding: clamp(18px, 2vw, 26px) clamp(4px, 1.4vw, 14px) clamp(18px, 2vw, 26px) clamp(14px, 2vw, 22px);
+  background: transparent;
+  border: 0;
+  border-radius: var(--r-md);
+  text-align: left;
+  cursor: pointer;
+  color: var(--text);
+  font-family: var(--font-display);
+  font-size: clamp(1.05rem, 1.7vw, 1.35rem);
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  line-height: 1.3;
+  transition: color var(--t) var(--ease), padding-left var(--t) var(--ease);
+}
+
+.sj-faq__q:hover {
+  color: var(--blue-300);
+}
+
+.sj-faq__q:focus-visible {
+  outline-offset: -3px;
+  border-radius: var(--r-md);
+}
+
+.sj-faq__item--open .sj-faq__q {
+  padding-left: clamp(20px, 2.6vw, 30px);
+}
+
+/* The plus mark. */
+.sj-faq__mark {
+  position: relative;
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--r-pill);
+  color: var(--blue-300);
+  background: var(--glass);
+  border: 1px solid var(--line);
+  backdrop-filter: blur(14px) saturate(150%);
+  -webkit-backdrop-filter: blur(14px) saturate(150%);
+  transition: transform var(--t) var(--ease), border-color var(--t) var(--ease),
+    box-shadow var(--t) var(--ease), background var(--t) var(--ease), color var(--t) var(--ease);
+}
+
+.sj-faq__bar {
+  position: absolute;
+  background: currentColor;
+  border-radius: 1px;
+}
+
+.sj-faq__bar--h {
+  width: 12px;
+  height: 1px;
+}
+
+.sj-faq__bar--v {
+  width: 1px;
+  height: 12px;
+  transform-origin: 50% 50%;
+  transition: transform var(--t) var(--ease);
+}
+
+.sj-faq__q:hover .sj-faq__mark {
+  border-color: var(--line-blue);
+  background: var(--glass-hi);
+}
+
+.sj-faq__item--open .sj-faq__mark {
+  transform: rotate(90deg);
+  color: var(--cyan-300);
+  border-color: var(--line-blue);
+  background: var(--grad-electric-soft);
+  box-shadow: var(--glow-sm);
+}
+
+.sj-faq__item--open .sj-faq__bar--v {
+  transform: scaleY(0);
+}
+
+/* Panel — height animates via grid-template-rows, no magic max-height. */
+.sj-faq__panel {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows var(--t-slow) var(--ease);
+}
+
+.sj-faq__item--open .sj-faq__panel {
+  grid-template-rows: 1fr;
+}
+
+.sj-faq__panelInner {
+  overflow: hidden;
+  min-height: 0;
+  visibility: hidden;
+  transition: visibility var(--t-slow);
+}
+
+.sj-faq__item--open .sj-faq__panelInner {
+  visibility: visible;
+}
+
+.sj-faq__a {
+  max-width: 66ch;
+  padding: 0 clamp(4px, 3vw, 52px) clamp(22px, 2.8vw, 32px) clamp(14px, 2vw, 22px);
+  font-size: var(--fs-body);
+  color: var(--text-2);
+  line-height: 1.75;
+  overflow-wrap: anywhere;
+  opacity: 0;
+  transform: translateY(-6px);
+  transition: opacity var(--t) var(--ease), transform var(--t) var(--ease);
+}
+
+.sj-faq__item--open .sj-faq__a {
+  opacity: 1;
+  transform: none;
+  transition-delay: 90ms;
+}
+
+.sj-faq__mail {
+  color: var(--blue-300);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-decoration-color: rgba(95, 182, 255, 0.38);
+  text-underline-offset: 3px;
+  transition: color var(--t) var(--ease), text-decoration-color var(--t) var(--ease);
+}
+
+.sj-faq__mail:hover {
+  color: var(--cyan-300);
+  text-decoration-color: rgba(92, 231, 255, 0.7);
+}
+
+/* ------------------------- still stuck card ---------------------- */
+.sj-faq__cta {
+  position: relative;
+  margin-top: clamp(44px, 6vw, 80px);
+  padding: clamp(24px, 3vw, 40px);
+  border-radius: var(--r-xl);
+  text-align: center;
+  overflow: hidden;
+}
+
+/* Electric top edge, fading out at both ends. */
+.sj-faq__cta::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--grad-electric);
+  box-shadow: var(--glow-sm);
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 16%, #000 84%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 16%, #000 84%, transparent);
+  pointer-events: none;
+}
+
+.sj-faq__cta::after {
+  content: '';
+  position: absolute;
+  top: -120px;
+  left: 50%;
+  width: 420px;
+  height: 240px;
+  transform: translateX(-50%);
+  background: radial-gradient(closest-side, rgba(0, 150, 255, 0.28), transparent 72%);
+  filter: blur(8px);
+  pointer-events: none;
+}
+
+.sj-faq__ctaBody {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.sj-faq__ctaTitle {
+  font-size: var(--fs-h3);
+}
+
+.sj-faq__ctaText {
+  margin-top: 12px;
+  max-width: 42ch;
+  color: var(--text-2);
+}
+
+.sj-faq__ctaBtn {
+  margin-top: clamp(20px, 2.4vw, 28px);
+}
+
+@media (max-width: 460px) {
+  .sj-faq__mark {
+    width: 30px;
+    height: 30px;
+  }
+  .sj-faq__q {
+    gap: 12px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sj-faq__a {
+    opacity: 1;
+    transform: none;
+  }
+}

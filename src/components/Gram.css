@@ -1,0 +1,292 @@
+/* ------------------------------------------------------------------
+   Gram — "Follow Us On The Gram"
+   Two counter-running, edge-to-edge marquees of venue stills.
+   Prefix: sj-gram
+   ------------------------------------------------------------------ */
+
+.sj-gram {
+  --sj-gram-gap: 14px;
+  --sj-gram-tile: clamp(150px, 17vw, 240px);
+  overflow: clip;
+}
+
+/* ----------------------------- header ---------------------------- */
+.sj-gram__head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.sj-gram__lead {
+  margin-top: 18px;
+  margin-inline: auto;
+  text-align: center;
+  max-width: 44ch;
+}
+
+/* --------------------------- the marquee -------------------------- */
+/* Full-bleed breakout. The viewport clips in both axes, so the track
+   can never hand the page a horizontal scrollbar. */
+.sj-gram__marquee {
+  position: relative;
+  left: 50%;
+  width: 100vw;
+  max-width: 100vw;
+  margin-left: -50vw;
+  margin-top: clamp(34px, 5vw, 58px);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sj-gram-gap);
+}
+
+/* The row itself stays unclipped so hover glow can bleed between rows —
+   the marquee viewport above is what actually clips the travelling track. */
+.sj-gram__row {
+  position: relative;
+  min-width: 0;
+}
+
+/* Two copies of the list sit back to back; travelling exactly -50% of
+   the track lands copy two precisely where copy one started. Each tile
+   owns its trailing gap as a margin (never `gap`) so that -50% is exact. */
+.sj-gram__track {
+  display: flex;
+  width: max-content;
+  will-change: transform;
+  animation: sj-gram-left 48s linear infinite;
+}
+
+.sj-gram__row--right .sj-gram__track {
+  animation-name: sj-gram-right;
+  animation-duration: 62s;
+}
+
+.sj-gram__set {
+  display: flex;
+  flex: 0 0 auto;
+}
+
+@keyframes sj-gram-left {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+@keyframes sj-gram-right {
+  from {
+    transform: translate3d(-50%, 0, 0);
+  }
+  to {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+/* Hovering anywhere in the section holds both rows still. */
+@media (hover: hover) and (pointer: fine) {
+  .sj-gram:hover .sj-gram__track,
+  .sj-gram:focus-within .sj-gram__track {
+    animation-play-state: paused;
+  }
+}
+
+/* ----------------------------- tiles ------------------------------ */
+.sj-gram__tile {
+  position: relative;
+  display: block;
+  flex: 0 0 auto;
+  width: var(--sj-gram-tile);
+  aspect-ratio: 1 / 1;
+  margin-right: var(--sj-gram-gap);
+  border-radius: var(--r-md);
+  overflow: hidden;
+  background: var(--bg-2);
+  isolation: isolate;
+  transition: box-shadow var(--t) var(--ease), transform var(--t) var(--ease);
+}
+
+.sj-gram__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1.001);
+  transition: transform var(--t-slow) var(--ease-out), filter var(--t) var(--ease);
+  filter: saturate(0.72) contrast(1.04);
+}
+
+/* Resting state: a blue duotone wash pulls every still into one palette. */
+.sj-gram__wash {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    linear-gradient(168deg, rgba(0, 62, 214, 0.52) 0%, rgba(0, 170, 255, 0.3) 100%),
+    linear-gradient(180deg, rgba(4, 6, 11, 0.34), rgba(4, 6, 11, 0.5));
+  transition: opacity var(--t) var(--ease);
+}
+
+/* Hover reveal: glyph over a short label, on a dimmed blue scrim. */
+.sj-gram__hover {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 10px;
+  text-align: center;
+  color: var(--text);
+  opacity: 0;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(4, 6, 11, 0.12), rgba(2, 8, 24, 0.62));
+  transition: opacity var(--t) var(--ease);
+}
+
+.sj-gram__hover-label {
+  font-family: var(--font-display);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  line-height: 1;
+  transform: translateY(4px);
+  transition: transform var(--t) var(--ease-out);
+}
+
+.sj-gram__glyph {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 auto;
+}
+
+.sj-gram__glyph--tile {
+  width: 28px;
+  height: 28px;
+  color: var(--cyan-300);
+  filter: drop-shadow(0 0 10px rgba(0, 190, 255, 0.55));
+  transform: translateY(6px);
+  transition: transform var(--t) var(--ease-out);
+}
+
+/* 1px electric inset border, drawn above the image so the scale cannot hide it. */
+.sj-gram__tile::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  border: 1px solid var(--line-blue);
+  border-radius: inherit;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--t) var(--ease);
+}
+
+.sj-gram__tile:hover,
+.sj-gram__tile:focus-visible {
+  box-shadow: var(--glow-sm);
+}
+
+.sj-gram__tile:hover .sj-gram__img,
+.sj-gram__tile:focus-visible .sj-gram__img {
+  transform: scale(1.07);
+  filter: saturate(1) contrast(1);
+}
+
+.sj-gram__tile:hover .sj-gram__wash,
+.sj-gram__tile:focus-visible .sj-gram__wash {
+  opacity: 0.22;
+}
+
+.sj-gram__tile:hover .sj-gram__hover,
+.sj-gram__tile:focus-visible .sj-gram__hover {
+  opacity: 1;
+}
+
+.sj-gram__tile:hover .sj-gram__hover-label,
+.sj-gram__tile:focus-visible .sj-gram__hover-label,
+.sj-gram__tile:hover .sj-gram__glyph--tile,
+.sj-gram__tile:focus-visible .sj-gram__glyph--tile {
+  transform: translateY(0);
+}
+
+/* --------------------------- edge fades --------------------------- */
+.sj-gram__fade {
+  position: absolute;
+  top: -1px;
+  bottom: -1px;
+  z-index: 4;
+  width: 12vw;
+  max-width: 180px;
+  pointer-events: none;
+}
+
+.sj-gram__fade--l {
+  left: 0;
+  background: linear-gradient(90deg, var(--bg) 8%, rgba(4, 6, 11, 0.72) 42%, rgba(4, 6, 11, 0) 100%);
+}
+
+.sj-gram__fade--r {
+  right: 0;
+  background: linear-gradient(270deg, var(--bg) 8%, rgba(4, 6, 11, 0.72) 42%, rgba(4, 6, 11, 0) 100%);
+}
+
+/* ------------------------------ CTA ------------------------------- */
+.sj-gram__cta-wrap {
+  display: flex;
+  justify-content: center;
+  margin-top: clamp(34px, 5vw, 58px);
+}
+
+.sj-gram__cta {
+  min-height: 48px;
+}
+
+/* -------------------------- reduced motion ------------------------ */
+/* No travel at all: the rows become ordinary horizontal scrollers and
+   the duplicate set is dropped so nothing is announced twice. */
+@media (prefers-reduced-motion: reduce) {
+  .sj-gram__track {
+    animation: none !important;
+    transform: none !important;
+    will-change: auto;
+  }
+
+  .sj-gram__set--dup {
+    display: none;
+  }
+
+  .sj-gram__row {
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x proximity;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-inline: var(--gutter);
+  }
+
+  .sj-gram__row::-webkit-scrollbar {
+    display: none;
+  }
+
+  .sj-gram__tile {
+    scroll-snap-align: center;
+  }
+}
+
+/* ---------------------------- narrow ------------------------------ */
+@media (max-width: 560px) {
+  .sj-gram {
+    --sj-gram-gap: 10px;
+  }
+
+  .sj-gram__fade {
+    width: 16vw;
+  }
+}

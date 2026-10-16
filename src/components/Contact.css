@@ -1,0 +1,296 @@
+/* ------------------------------------------------------------------
+   Contact — one big panel split into three cells by fading hairlines.
+   Prefix: sj-contact
+   ------------------------------------------------------------------ */
+
+.sj-contact {
+  position: relative;
+  isolation: isolate;
+}
+
+/* A low, wide pool of electric light sitting under the panel so the page
+   closes on a glow rather than simply stopping. */
+.sj-contact::after {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  left: 50%;
+  bottom: -14%;
+  width: min(1100px, 120%);
+  aspect-ratio: 2.4 / 1;
+  transform: translateX(-50%);
+  pointer-events: none;
+  background: radial-gradient(closest-side, rgba(0, 110, 255, 0.17), transparent 72%);
+  filter: blur(14px);
+}
+
+.sj-contact__head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin-bottom: clamp(32px, 4vw, 58px);
+}
+
+/* ------------------------- panel + top bloom ---------------------- */
+/* The bloom lives on the wrapper because .panel is overflow:hidden. */
+.sj-contact__bloom {
+  position: relative;
+}
+
+.sj-contact__bloom::before,
+.sj-contact__bloom::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 60%;
+  height: 2px;
+  transform: translate(-50%, -50%);
+  background: var(--grad-electric);
+  border-radius: var(--r-pill);
+  pointer-events: none;
+}
+
+/* Blurred copy of the same hairline — the part that reads as emitted light. */
+.sj-contact__bloom::after {
+  height: 6px;
+  filter: blur(13px);
+  opacity: 0.85;
+}
+
+.sj-contact__panel {
+  border-radius: var(--r-2xl);
+  padding: clamp(26px, 3.5vw, 52px);
+  box-shadow: 0 34px 90px -46px rgba(0, 0, 0, 0.9), inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
+}
+
+/* ------------------------------ grid ------------------------------ */
+.sj-contact__grid {
+  --cellgap: clamp(26px, 3.4vw, 48px);
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--cellgap);
+}
+
+.sj-contact__cell {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 0;
+}
+
+/* Vertical hairline between cells, fading out at both ends. */
+.sj-contact__cell + .sj-contact__cell::before {
+  content: '';
+  position: absolute;
+  top: -6px;
+  bottom: -6px;
+  left: calc(var(--cellgap) / -2);
+  width: 1px;
+  background: linear-gradient(180deg, transparent, var(--line-2) 24%, var(--line-2) 76%, transparent);
+  pointer-events: none;
+}
+
+.sj-contact__label {
+  font-family: var(--font-body);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  line-height: 1;
+  text-transform: uppercase;
+  color: var(--blue-300);
+  margin: 0 0 18px;
+}
+
+.sj-contact__copy {
+  font-size: var(--fs-sm);
+  line-height: 1.7;
+  color: var(--text-2);
+  max-width: 34ch;
+}
+
+/* ---------------------------- enquiries --------------------------- */
+.sj-contact__email {
+  display: inline-block;
+  margin-top: 20px;
+  font-family: var(--font-display);
+  /* Sized to keep the whole address on one line inside the Enquiries column —
+     `anywhere` alone would strand the final character on its own row. */
+  font-size: clamp(0.95rem, 1.5vw, 1.28rem);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.25;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 7px;
+  transition: text-decoration-color var(--t) var(--ease);
+}
+
+.sj-contact__email:hover {
+  text-decoration-color: var(--blue-300);
+}
+
+.sj-contact__btn {
+  margin-top: 24px;
+  min-height: 44px;
+}
+
+.sj-contact__icon {
+  width: 17px;
+  height: 17px;
+  flex: none;
+}
+
+/* ------------------------------ hours ----------------------------- */
+.sj-contact__hours {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+}
+
+.sj-contact__hour {
+  font-size: var(--fs-sm);
+  color: var(--text-2);
+}
+
+.sj-contact__hourRow {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  width: 100%;
+}
+
+.sj-contact__day {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 9px;
+  letter-spacing: 0.005em;
+}
+
+.sj-contact__leader {
+  flex: 1 1 14px;
+  min-width: 14px;
+  align-self: center;
+  height: 1px;
+  margin: 0 8px;
+  border-bottom: 1px dotted var(--line-2);
+}
+
+.sj-contact__time {
+  flex: none;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.sj-contact__hour.is-tonight {
+  color: var(--text);
+}
+
+.sj-contact__hour.is-tonight .sj-contact__leader {
+  border-bottom-color: var(--line-blue);
+}
+
+.sj-contact__dot {
+  flex: none;
+  width: 7px;
+  height: 7px;
+  border-radius: var(--r-pill);
+  background: var(--cyan-400);
+  box-shadow: var(--glow-sm);
+  transform: translateY(-1px);
+  animation: sj-contact-pulse 2.4s var(--ease) infinite;
+}
+
+.sj-contact__chip {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 5px 11px;
+  border-radius: var(--r-pill);
+  background: var(--grad-electric);
+  box-shadow: var(--glow-sm);
+  color: var(--text);
+  font-family: var(--font-display);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  line-height: 1;
+}
+
+@keyframes sj-contact-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    box-shadow: 0 0 0 0 rgba(0, 190, 255, 0.55), var(--glow-sm);
+  }
+  60% {
+    opacity: 0.72;
+    box-shadow: 0 0 0 7px rgba(0, 190, 255, 0), var(--glow-sm);
+  }
+}
+
+/* ----------------------------- find us ---------------------------- */
+.sj-contact__address {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-style: normal;
+  font-size: var(--fs-body);
+  line-height: 1.55;
+  color: var(--text-2);
+}
+
+.sj-contact__address span:first-child {
+  color: var(--text);
+}
+
+.sj-contact__note {
+  margin-top: 16px;
+  font-size: var(--fs-xs);
+  letter-spacing: 0.02em;
+  color: var(--faint);
+}
+
+/* --------------------------- responsive --------------------------- */
+@media (max-width: 900px) {
+  .sj-contact__grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Hairlines rotate to horizontal dividers between the stacked cells. */
+  .sj-contact__cell + .sj-contact__cell::before {
+    top: calc(var(--cellgap) / -2);
+    bottom: auto;
+    left: 0;
+    right: 0;
+    width: auto;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--line-2) 18%, var(--line-2) 82%, transparent);
+  }
+
+  .sj-contact__copy,
+  .sj-contact__hours {
+    max-width: 46ch;
+  }
+}
+
+@media (max-width: 420px) {
+  .sj-contact__btn {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sj-contact__dot {
+    animation: none;
+    opacity: 1;
+  }
+}

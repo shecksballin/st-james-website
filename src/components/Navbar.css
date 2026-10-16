@@ -1,0 +1,552 @@
+/* ------------------------------------------------------------------
+   Navbar — three detached glass clusters floating over the hero,
+   merging into one continuous bar once the page scrolls.
+   ------------------------------------------------------------------ */
+
+.sj-nav {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: var(--z-nav);
+  padding-top: 18px;
+  pointer-events: none;
+  transition: padding-top var(--t) var(--ease);
+}
+
+.sj-nav.is-condensed {
+  padding-top: 10px;
+}
+
+.sj-nav__row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 44px;
+  pointer-events: none;
+}
+
+/* The unified bar. Lives behind the clusters, invisible until condensed,
+   so nothing about the layout changes when it appears. */
+.sj-nav__bar {
+  position: absolute;
+  top: -10px;
+  bottom: -10px;
+  left: calc(var(--gutter) - 14px);
+  right: calc(var(--gutter) - 14px);
+  border-radius: var(--r-pill);
+  background: linear-gradient(180deg, rgba(11, 17, 30, 0.78), rgba(5, 8, 15, 0.74));
+  border: 1px solid var(--line);
+  box-shadow: 0 22px 54px -28px rgba(0, 0, 0, 0.95), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  opacity: 0;
+  transform: translateY(-6px);
+  pointer-events: none;
+  transition: opacity var(--t) var(--ease), transform var(--t) var(--ease),
+    top var(--t) var(--ease), bottom var(--t) var(--ease);
+}
+
+/* Hairline that fades out at both ends, riding the bar's lower edge. */
+.sj-nav__bar::after {
+  content: '';
+  position: absolute;
+  left: 9%;
+  right: 9%;
+  bottom: -1px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(110, 180, 255, 0.3), transparent);
+}
+
+.sj-nav.is-condensed .sj-nav__bar {
+  opacity: 1;
+  transform: none;
+  top: -6px;
+  bottom: -6px;
+}
+
+.sj-nav.is-condensed .sj-nav__row {
+  pointer-events: auto;
+}
+
+.sj-nav__cluster {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  pointer-events: auto;
+  transition: gap var(--t) var(--ease);
+}
+
+/* Condensed: the gaps collapse so the clusters read as one bar. */
+.sj-nav.is-condensed .sj-nav__cluster {
+  gap: 0;
+}
+
+.sj-nav.is-condensed .sj-nav__cta {
+  margin-left: 8px;
+}
+
+/* ------------------------------ pills ------------------------------ */
+
+.sj-nav__pill {
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  margin: 0;
+  min-height: 44px;
+  padding: 0 17px;
+  border: 0;
+  border-radius: var(--r-pill);
+  background: none;
+  color: var(--text-2);
+  font-family: var(--font-body);
+  font-size: var(--fs-xs);
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  line-height: 1;
+  text-transform: uppercase;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: transform var(--t) var(--ease), color var(--t) var(--ease);
+}
+
+.sj-nav__pill::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background-color: var(--glass);
+  border: 1px solid var(--line);
+  backdrop-filter: blur(20px) saturate(150%);
+  -webkit-backdrop-filter: blur(20px) saturate(150%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  transition: opacity var(--t) var(--ease), background-color var(--t) var(--ease),
+    border-color var(--t) var(--ease), box-shadow var(--t) var(--ease);
+}
+
+.sj-nav__pill:hover {
+  transform: translateY(-2px);
+  color: var(--text);
+}
+
+.sj-nav__pill:hover::before {
+  background-color: var(--glass-hi);
+  border-color: var(--line-blue);
+  box-shadow: var(--glow-sm), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+/* Once merged, the individual pill fills dissolve into the single bar. */
+.sj-nav.is-condensed .sj-nav__pill::before {
+  opacity: 0;
+}
+
+.sj-nav.is-condensed .sj-nav__pill:hover::before {
+  opacity: 1;
+}
+
+.sj-nav__burger {
+  width: 44px;
+  padding: 0;
+  color: var(--text);
+  flex: 0 0 auto;
+}
+
+/* ---------------------------- rhythm pill --------------------------- */
+
+.sj-nav__rhythm {
+  padding-right: 18px;
+  cursor: default;
+}
+
+.sj-nav__rhythm:hover {
+  transform: none;
+  color: var(--text-2);
+}
+
+.sj-nav__rhythm:hover::before {
+  background-color: var(--glass);
+  border-color: var(--line);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.sj-nav__days {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.sj-nav__slash {
+  margin-right: 7px;
+  color: var(--faint);
+}
+
+.sj-nav__dot {
+  position: relative;
+  flex: 0 0 auto;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--cyan-300);
+  box-shadow: 0 0 10px 1px rgba(0, 212, 255, 0.85);
+}
+
+.sj-nav__dot::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 1px solid var(--cyan-400);
+  animation: sj-nav-pulse 2.6s var(--ease-out) infinite;
+}
+
+@keyframes sj-nav-pulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  70%,
+  100% {
+    transform: scale(3);
+    opacity: 0;
+  }
+}
+
+/* ------------------------------ wordmark ---------------------------- */
+
+/* Centred on the viewport, never on the leftover space. */
+.sj-nav__brand {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 12px;
+  pointer-events: auto;
+  transition: opacity var(--t) var(--ease);
+}
+
+.sj-nav__logo {
+  width: auto;
+  height: 26px;
+  filter: drop-shadow(0 2px 14px rgba(0, 0, 0, 0.55));
+  transition: height var(--t) var(--ease), filter var(--t) var(--ease);
+}
+
+.sj-nav__brand:hover .sj-nav__logo {
+  filter: drop-shadow(0 0 16px rgba(95, 182, 255, 0.55));
+}
+
+.sj-nav.is-condensed .sj-nav__logo {
+  height: 22px;
+}
+
+/* ---------------------------- right cluster -------------------------- */
+
+.sj-nav__place {
+  letter-spacing: 0.1em;
+}
+
+.sj-nav__place svg {
+  color: var(--blue-300);
+  flex: 0 0 auto;
+}
+
+.sj-nav .sj-nav__cta {
+  min-height: 44px;
+  flex: 0 0 auto;
+  transition: transform var(--t) var(--ease), box-shadow var(--t) var(--ease),
+    margin-left var(--t) var(--ease), background-position var(--t) var(--ease);
+}
+
+/* global.css ships a generic :focus-visible radius — keep the pills round. */
+.sj-nav .sj-nav__cta:focus-visible,
+.sj-nav__pill:focus-visible {
+  border-radius: var(--r-pill);
+  outline-offset: 4px;
+}
+
+.sj-nav__cta-short {
+  display: none;
+}
+
+/* ------------------------------ overlay ------------------------------ */
+
+.sj-nav__overlay {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-overlay);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background:
+    radial-gradient(900px 620px at 12% -8%, rgba(0, 86, 255, 0.16), transparent 62%),
+    radial-gradient(760px 520px at 92% 8%, rgba(0, 196, 255, 0.1), transparent 60%),
+    radial-gradient(1100px 800px at 50% 108%, rgba(0, 64, 200, 0.16), transparent 65%),
+    rgba(4, 6, 11, 0.93);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity var(--t) var(--ease), visibility 0s linear var(--t);
+}
+
+/* Chrome keeps compositing `backdrop-filter` even at opacity 0 / visibility
+   hidden, so a closed menu would blur the entire hero behind it. Only ever
+   declare the filter while the overlay is actually open. */
+.sj-nav__overlay.is-open {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  backdrop-filter: blur(26px) saturate(150%);
+  -webkit-backdrop-filter: blur(26px) saturate(150%);
+  transition: opacity var(--t) var(--ease), visibility 0s linear 0s;
+}
+
+.sj-nav__sheet {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  padding-block: 18px clamp(28px, 6vw, 56px);
+}
+
+.sj-nav__overlay-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 44px;
+}
+
+.sj-nav__overlay-brand img {
+  width: auto;
+  height: 24px;
+}
+
+.sj-nav__close {
+  width: 44px;
+  padding: 0;
+  color: var(--text);
+  flex: 0 0 auto;
+}
+
+/* -------------------------- overlay menu ----------------------------- */
+
+.sj-nav__menu-wrap {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  padding-block: clamp(26px, 6vw, 56px);
+}
+
+.sj-nav__menu {
+  width: 100%;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.sj-nav__menu-item {
+  opacity: 0;
+  transform: translateY(26px);
+  transition: opacity var(--t-slow) var(--ease-out), transform var(--t-slow) var(--ease-out);
+  transition-delay: 0ms;
+}
+
+.sj-nav__overlay.is-open .sj-nav__menu-item {
+  opacity: 1;
+  transform: none;
+  transition-delay: calc(90ms + var(--sj-i, 0) * 62ms);
+}
+
+.sj-nav__menu-link {
+  position: relative;
+  display: flex;
+  align-items: baseline;
+  gap: clamp(14px, 2.4vw, 30px);
+  padding-block: clamp(4px, 0.9vw, 10px);
+  width: fit-content;
+  color: var(--text-2);
+  transition: color var(--t) var(--ease);
+}
+
+.sj-nav__index {
+  font-family: var(--font-body);
+  font-size: var(--fs-xs);
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  color: var(--faint);
+  transition: color var(--t) var(--ease);
+}
+
+.sj-nav__label {
+  position: relative;
+  display: inline-block;
+  font-family: var(--font-display);
+  font-size: clamp(2.2rem, 7.6vw, 4.5rem);
+  font-weight: 700;
+  letter-spacing: -0.042em;
+  line-height: 1.04;
+}
+
+/* Thin electric underline that wipes in from the left. */
+.sj-nav__label::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0.04em;
+  height: 1.5px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--blue-500), var(--cyan-300));
+  box-shadow: var(--glow-sm);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform var(--t) var(--ease);
+}
+
+.sj-nav__menu-link:hover,
+.sj-nav__menu-link:focus-visible,
+.sj-nav__menu-link.is-active {
+  color: var(--text);
+}
+
+.sj-nav__menu-link:hover .sj-nav__index,
+.sj-nav__menu-link:focus-visible .sj-nav__index,
+.sj-nav__menu-link.is-active .sj-nav__index {
+  color: var(--blue-300);
+}
+
+.sj-nav__menu-link:hover .sj-nav__label::after,
+.sj-nav__menu-link:focus-visible .sj-nav__label::after,
+.sj-nav__menu-link.is-active .sj-nav__label::after {
+  transform: scaleX(1);
+}
+
+/* -------------------------- overlay footer --------------------------- */
+
+.sj-nav__overlay-rule {
+  opacity: 0;
+  transition: opacity var(--t-slow) var(--ease-out);
+}
+
+.sj-nav__overlay-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 28px;
+  padding-top: clamp(18px, 3vw, 28px);
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity var(--t-slow) var(--ease-out), transform var(--t-slow) var(--ease-out);
+}
+
+.sj-nav__overlay.is-open .sj-nav__overlay-rule {
+  opacity: 1;
+  transition-delay: 320ms;
+}
+
+.sj-nav__overlay.is-open .sj-nav__overlay-foot {
+  opacity: 1;
+  transform: none;
+  transition-delay: 380ms;
+}
+
+.sj-nav__foot-links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 26px;
+}
+
+.sj-nav__foot-link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-size: var(--fs-sm);
+  color: var(--text-2);
+  transition: color var(--t) var(--ease);
+}
+
+.sj-nav__foot-link::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 12px;
+  height: 1px;
+  background: linear-gradient(90deg, var(--blue-400), var(--cyan-300));
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform var(--t) var(--ease);
+}
+
+.sj-nav__foot-link:hover,
+.sj-nav__foot-link:focus-visible {
+  color: var(--text);
+}
+
+.sj-nav__foot-link:hover::after,
+.sj-nav__foot-link:focus-visible::after {
+  transform: scaleX(1);
+}
+
+.sj-nav__foot-addr {
+  margin: 0;
+  font-size: var(--fs-sm);
+  max-width: 34ch;
+}
+
+/* ----------------------------- responsive ---------------------------- */
+
+@media (max-width: 900px) {
+  .sj-nav__rhythm,
+  .sj-nav__place {
+    display: none;
+  }
+}
+
+@media (max-width: 560px) {
+  .sj-nav__logo {
+    height: 22px;
+  }
+  .sj-nav.is-condensed .sj-nav__logo {
+    height: 19px;
+  }
+}
+
+@media (max-width: 420px) {
+  .sj-nav__cta-long {
+    display: none;
+  }
+  .sj-nav__cta-short {
+    display: inline;
+  }
+  .sj-nav__overlay-foot {
+    justify-content: flex-start;
+  }
+}
+
+/* --------------------------- reduced motion -------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .sj-nav__dot::after {
+    display: none;
+  }
+  .sj-nav__menu-item,
+  .sj-nav__overlay-foot,
+  .sj-nav__overlay-rule {
+    opacity: 1;
+    transform: none;
+    transition-delay: 0ms !important;
+  }
+  .sj-nav__pill:hover,
+  .sj-nav .sj-nav__cta:hover {
+    transform: none;
+  }
+}
